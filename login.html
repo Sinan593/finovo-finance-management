@@ -3,12 +3,40 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>login page</title>
+    <title>Login &amp; Sign up</title>
+    <link rel="stylesheet" type="text/css" href="login_style.css">
 </head>
 
 <body>
-    <h1>login page</h1>
+    <div class="wrapper">
+        <div class="form-wrapper sign-in">
+            <form action="">
+                <h2>Sign-in</h2>
+                <div class="input-group">
+                    <input type="text" required="">
+                    <label for="">Email or Username</label>
+                </div>
+                <div class="input-group">
+                    <input type="password" required="">
+                    <label for="">Password</label>
+                </div>
+                <div class="remember">
+                    <label><input type="checkbox"> Remember me</label>
+                </div>
+                <button type="submit">Login</button>
+                <div class="signUp-link">
+                    <p>Don't have an account? <a href="sign_up.html" class="signUpBtn-link">Sign Up</a></p>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+    <script src="login_script.js"></script>
+
+
 </body>
 
 </html>
