@@ -15,8 +15,11 @@ const getAllProducts = async (req, res, next) => {
       userId
     );
     res.status(StatusCodes.OK).json({
-      hits: productsList.length,
-      products: productsList,
+      success: true,
+      data: {
+        hits: productsList.length,
+        products: productsList,
+      },
     });
   } catch (error) {
     next(error);
@@ -43,7 +46,10 @@ const getSingleProduct = async (req, res, next) => {
     }
 
     res.status(StatusCodes.OK).json({
-      product: product[0],
+      success: true,
+      data: {
+        product: product[0],
+      },
     });
   } catch (error) {
     next(error);
@@ -55,17 +61,28 @@ const deleteProduct = async (req, res, next) => {
     const productId = req.params.id;
     const userId = req.body.user.id;
 
+    let product;
     try {
-      await asyncQuery(`DELETE FROM products WHERE id = ? and user_id = ?`, [
-        productId,
-        userId,
-      ]);
+      product = await asyncQuery(
+        `DELETE FROM products WHERE id = ? and user_id = ?`,
+        [productId, userId]
+      );
+
+      if (product.affectedRows < 1) {
+        throw new BadRequestError(
+          "Failed to delete the product. Please ensure that all required fields are provided and try again."
+        );
+      }
     } catch (error) {
       throw new DatabaseError(error.message);
     }
 
     res.status(StatusCodes.OK).json({
-      success: "Product removed from inventory!",
+      success: true,
+      data: {
+        affectedRows: product.affectedRows,
+        message: "Product removed from inventory!",
+      },
     });
   } catch (error) {
     next(error);
@@ -109,7 +126,11 @@ const addProduct = async (req, res, next) => {
     }
 
     res.status(StatusCodes.CREATED).json({
-      success: product,
+      success: true,
+      data: {
+        productId: product.insertId,
+        message: "Product added successfully!",
+      },
     });
   } catch (error) {
     next(error);
@@ -158,11 +179,22 @@ const editProduct = async (req, res, next) => {
         ]
       );
 
+      if (product.affectedRows < 1 || product.changedRows < 1) {
+        throw new BadRequestError(
+          "Failed to edit the product. Please ensure that all required fields are provided and try again."
+        );
+      }
+
       res.status(StatusCodes.OK).json({
-        success: product,
+        success: true,
+        data: {
+          affectedRows: product.affectedRows,
+          changedRows: product.changedRows,
+          message: product.message,
+        },
       });
     } catch (error) {
-      throw new DatabaseError(error.message);
+      next(error);
     }
   } catch (error) {
     next(error);

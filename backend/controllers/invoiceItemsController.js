@@ -23,7 +23,9 @@ const getAllInvoiceItems = async (req, res, next) => {
 
     const invoiceItemsList = await asyncQuery(query, invoiceId);
 
-    res.status(StatusCodes.OK).json({ invoiceItems: invoiceItemsList });
+    res
+      .status(StatusCodes.OK)
+      .json({ success: true, data: { invoiceItems: invoiceItemsList } });
   } catch (error) {
     next(error);
   }
@@ -101,7 +103,13 @@ const createInvoiceItem = async (req, res, next) => {
     logger.debug(JSON.stringify(result));
     logger.debug(JSON.stringify(result.insertId));
 
-    res.status(StatusCodes.CREATED).json({ id: result.insertId });
+    res.status(StatusCodes.CREATED).json({
+      success: true,
+      data: {
+        invoiceItemId: result.insertId,
+        message: "Invoice Item added successfully!",
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -117,9 +125,21 @@ const deleteInvoiceItems = async (req, res, next) => {
 
     const query = `DELETE FROM invoice_items WHERE invoice_id = ?`;
 
-    await asyncQuery(query, invoiceId);
+    const invoiceItems = await asyncQuery(query, invoiceId);
 
-    res.sendStatus(StatusCodes.NO_CONTENT);
+    if (invoiceItems.affectedRows < 1) {
+      throw new BadRequestError(
+        "Failed to delete the invoice items. Please ensure that all required fields are provided and try again."
+      );
+    }
+
+    res.status(StatusCodes.NO_CONTENT).json({
+      success: true,
+      data: {
+        affectedRows: invoiceItems.affectedRows,
+        message: "Invoice Item deleted successfully!",
+      },
+    });
   } catch (error) {
     next(error);
   }

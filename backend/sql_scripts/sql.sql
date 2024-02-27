@@ -19,7 +19,7 @@ CREATE TABLE users (
 CREATE TABLE products (
 	id bigint auto_increment,
     user_id bigint references users(id) on delete cascade,
-    name varchar(100) not null,
+    name varchar(100) unique not null,
     category varchar(100) not null,
     brand varchar(50) not null,
     stock int not null,
