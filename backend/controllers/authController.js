@@ -46,7 +46,7 @@ const register = async (req, res, next) => {
     });
     res.cookie("token", token, { httpOnly: true });
 
-    res.status(StatusCodes.CREATED).json({ token });
+    res.status(StatusCodes.CREATED).json({ success: true, data: { token } });
   } catch (error) {
     next(error);
   }
@@ -80,7 +80,8 @@ const login = async (req, res, next) => {
     res.cookie("token", token, { httpOnly: true });
 
     res.status(StatusCodes.OK).json({
-      token,
+      success: true,
+      data: { token },
     });
   } catch (error) {
     next(error);

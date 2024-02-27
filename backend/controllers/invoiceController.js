@@ -14,9 +14,11 @@ const getAllInvoices = async (req, res, next) => {
       `SELECT * FROM invoices WHERE user_id = ?`,
       userId
     );
-    res.status(StatusCodes.OK).json({ invoices });
+    res
+      .status(StatusCodes.OK)
+      .json({ success: true, data: { hits: invoices.length, invoices } });
   } catch (error) {
-    next(new DatabaseError(error.message));
+    next(error);
   }
 };
 
@@ -33,9 +35,11 @@ const getSingleInvoice = async (req, res, next) => {
       throw new BadRequestError("Invoice not found");
     }
 
-    res.status(StatusCodes.OK).json({ invoice: invoice[0] });
+    res
+      .status(StatusCodes.OK)
+      .json({ success: true, data: { invoice: invoice[0] } });
   } catch (error) {
-    next(new DatabaseError(error.message));
+    next(error);
   }
 };
 
@@ -80,11 +84,15 @@ const createInvoice = async (req, res, next) => {
       },
     ]);
 
-    res
-      .status(StatusCodes.CREATED)
-      .json({ success: "Invoice created successfully", invoice });
+    res.status(StatusCodes.CREATED).json({
+      success: true,
+      data: {
+        invoiceId: invoice.insertId,
+        message: "Invoice created succesfully!",
+      },
+    });
   } catch (error) {
-    next(new DatabaseError(error.message));
+    next(error);
   }
 };
 
@@ -95,15 +103,26 @@ const deleteInvoice = async (req, res, next) => {
 
     logger.debug(`invoiceID = ${invoiceId} and user ID = ${userId}`);
 
-    await asyncQuery(`DELETE FROM invoices WHERE id = ? and user_id = ?`, [
-      invoiceId,
-      userId,
-    ]);
-    res
-      .status(StatusCodes.OK)
-      .json({ success: "Invoice deleted successfully" });
+    const product = await asyncQuery(
+      `DELETE FROM invoices WHERE id = ? and user_id = ?`,
+      [invoiceId, userId]
+    );
+
+    if (product.affectedRows < 1) {
+      throw new BadRequestError(
+        "Failed to delete the invoices. Please ensure that all required fields are provided and try again."
+      );
+    }
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: {
+        affectedRows: product.affectedRows,
+        message: "Invoice deleted successfully!",
+      },
+    });
   } catch (error) {
-    next(new DatabaseError(error.message));
+    next(error);
   }
 };
 
