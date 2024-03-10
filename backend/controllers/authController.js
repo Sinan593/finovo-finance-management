@@ -44,7 +44,12 @@ const register = async (req, res, next) => {
       firstname,
       lastname,
     });
-    res.cookie("token", token, { httpOnly: true });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, // Set to true if you are using HTTPS
+      sameSite: "lax", // Set to 'none' for cross-origin requests
+      domain: "localhost", // Set to your domain
+    });
 
     res.status(StatusCodes.CREATED).json({ success: true, data: { token } });
   } catch (error) {
@@ -77,7 +82,12 @@ const login = async (req, res, next) => {
       firstname: user[0].firstname,
       lastname: user[0].lastname,
     });
-    res.cookie("token", token, { httpOnly: true });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, // Set to true if you are using HTTPS
+      sameSite: "lax", // Set to 'none' for cross-origin requests
+      domain: "localhost", // Set to your domain
+    });
 
     res.status(StatusCodes.OK).json({
       success: true,

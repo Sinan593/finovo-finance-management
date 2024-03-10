@@ -126,9 +126,44 @@ const deleteInvoice = async (req, res, next) => {
   }
 };
 
+const updateInvoiceStatus = async (req, res, next) => {
+  try {
+    const invoiceId = req.params.id;
+    const newStatus = req.body.status;
+
+    logger.debug("RECEIVED REQUEST!");
+
+    if (!["paid", "unpaid"].includes(newStatus)) {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        success: false,
+        message: "Invalid status provided",
+      });
+    }
+
+    const result = await asyncQuery(
+      `UPDATE invoices SET payment_status = ? WHERE id = ?`,
+      [newStatus, invoiceId]
+    );
+
+    if (result.affectedRows < 1) {
+      throw new BadRequestError("Failed to update the invoice status");
+    }
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      data: {
+        message: "Invoice status updated successfully",
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllInvoices,
   getSingleInvoice,
   createInvoice,
   deleteInvoice,
+  updateInvoiceStatus,
 };
