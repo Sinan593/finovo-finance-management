@@ -8,6 +8,7 @@ const {
   getSingleInvoice,
   createInvoice,
   deleteInvoice,
+  updateInvoiceStatus,
 } = require("../controllers/invoiceController");
 
 router
@@ -19,5 +20,7 @@ router
   .route("/:id")
   .get(verifyJwtToken, getSingleInvoice)
   .delete(verifyJwtToken, deleteInvoice);
+
+router.route("/:id/status").patch(verifyJwtToken, updateInvoiceStatus);
 
 module.exports = router;
