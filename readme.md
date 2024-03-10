@@ -49,13 +49,15 @@ Finovo is an open-source finance management software developed as a university p
    ```
 2. Run the queries present inside sql_scripts directory of backend in MySQL Workbench
 
-3. Start the express development server inside the finovo-backend directory
+3. Enter database credentials inside finovo-backend/db/connectDB.js
+
+4. Start the express development server inside the finovo-backend directory
 
    ```bash
    npm run dev
    ```
 
-4. Start the react development server inside the finovo-client directory
+5. Start the react development server inside the finovo-client directory
    ```bash
    npm run dev
    ```
