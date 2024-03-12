@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS invoice_items;
 DROP TABLE IF EXISTS invoices;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS employees;
 
 -- Create tables
 CREATE TABLE users (
@@ -53,6 +54,18 @@ CREATE TABLE invoice_items (
     tax decimal(10,2) not null,
     total decimal(10,2) not null,
     primary key (invoice_id, product_id)
+);
+
+create table employees(
+	id bigint auto_increment,
+    user_id bigint references users(id) on delete cascade,
+    firstname varchar(50) not null,
+    lastname varchar(50) not null,
+    email varchar(50) unique not null,
+    phone varchar(15) unique not null,
+    job_title varchar(50) not null,
+    salary decimal(10,2) not null,
+    primary key (id, user_id)
 );
 
 -- Stored procedure
