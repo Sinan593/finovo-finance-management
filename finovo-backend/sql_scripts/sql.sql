@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS invoices;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS employees;
+DROP TABLE IF EXISTS notifications;
 
 -- Create tables
 CREATE TABLE users (
@@ -68,6 +69,13 @@ create table employees(
     primary key (id, user_id)
 );
 
+CREATE TABLE notifications(
+    id BIGINT AUTO_INCREMENT,
+    message VARCHAR(255) NOT NULL,
+    user_id BIGINT REFERENCES users(id),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    primary key (id, user_id)
+);
 -- Stored procedure
 DELIMITER //
 DROP TRIGGER IF EXISTS update_invoice;
@@ -87,6 +95,19 @@ BEGIN
                         total = new_total
                     WHERE id = NEW.invoice_id;
     
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+
+CREATE TRIGGER stock_notification
+AFTER UPDATE ON products
+FOR EACH ROW
+BEGIN
+    IF NEW.stock < 5 THEN
+        INSERT INTO notifications (message, user_id) VALUES (CONCAT('Stock of product ', NEW.name, ' is low. Only ', NEW.stock,' pieces remain!'), NEW.user_id);
+    END IF;
 END;
 //
 DELIMITER ;
